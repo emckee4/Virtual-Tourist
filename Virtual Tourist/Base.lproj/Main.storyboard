@@ -49,8 +49,84 @@
                     <view key="view" contentMode="scaleToFill" id="lD3-ga-Sev">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="wHU-Wd-EMe">
+                                <rect key="frame" x="0.0" y="164" width="600" height="426"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="FZL-vJ-Fw0">
+                                    <size key="itemSize" width="80" height="80"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="collectionViewCell" id="ch6-nO-Nn5" customClass="PhotoCell" customModule="Virtual_Tourist" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1It-ZR-khN">
+                                                    <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
+                                                </imageView>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                        <connections>
+                                            <outlet property="imageView" destination="1It-ZR-khN" id="mVx-4g-sEH"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="placeholderCell" id="7iQ-3f-Sox" customClass="PlaceholderCell" customModule="Virtual_Tourist" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="Pil-em-9aF">
+                                                    <rect key="frame" x="22" y="21" width="37" height="37"/>
+                                                </activityIndicatorView>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                        <connections>
+                                            <outlet property="activityIndicator" destination="Pil-em-9aF" id="9hx-2A-k24"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                </cells>
+                            </collectionView>
+                            <navigationBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vVq-c1-I8C">
+                                <rect key="frame" x="0.0" y="20" width="600" height="44"/>
+                                <items>
+                                    <navigationItem title="Title" id="lsn-Wg-8jO">
+                                        <barButtonItem key="backBarButtonItem" title="Back" id="0zS-3Y-tO9"/>
+                                        <barButtonItem key="rightBarButtonItem" title="Item" id="rEL-zp-8cZ"/>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="0cY-oV-8HQ">
+                                <rect key="frame" x="0.0" y="64" width="600" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="grN-P1-txN"/>
+                                </constraints>
+                            </mapView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailingMargin" secondItem="wHU-Wd-EMe" secondAttribute="trailing" constant="-16" id="1NJ-6t-dfW"/>
+                            <constraint firstItem="wHU-Wd-EMe" firstAttribute="leading" secondItem="lD3-ga-Sev" secondAttribute="leadingMargin" constant="-16" id="KON-dp-edL"/>
+                            <constraint firstItem="wHU-Wd-EMe" firstAttribute="top" secondItem="0cY-oV-8HQ" secondAttribute="bottom" id="SRV-RW-ipt"/>
+                            <constraint firstItem="0cY-oV-8HQ" firstAttribute="top" secondItem="lD3-ga-Sev" secondAttribute="topMargin" constant="64" id="hY3-uR-CSV"/>
+                            <constraint firstItem="VJB-Pu-C6U" firstAttribute="top" secondItem="wHU-Wd-EMe" secondAttribute="bottom" constant="10" id="jzG-7g-05H"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="0cY-oV-8HQ" secondAttribute="trailing" constant="-16" id="kPL-Kd-RKf"/>
+                            <constraint firstItem="0cY-oV-8HQ" firstAttribute="leading" secondItem="lD3-ga-Sev" secondAttribute="leadingMargin" constant="-16" id="xoe-2L-ttO"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="collectionView" destination="wHU-Wd-EMe" id="hrL-ME-PhX"/>
+                        <outlet property="photoMapView" destination="0cY-oV-8HQ" id="50y-qr-9Ss"/>
+                        <outlet property="reloadImageSetButton" destination="rEL-zp-8cZ" id="Qy6-Kc-TJn"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Znm-99-R14" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

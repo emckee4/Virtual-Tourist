@@ -27,7 +27,7 @@ class Flickr:NSObject {
     private let dataFormat = "json"
     private let noJsonCallback = "1"
     private let boundingBoxDelta:Double = 1.0
-    private let perPage = "25"
+    private let perPage = "20"
     private let basePhotoURLString = "https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg"
     
     ///keys for resultDict used in completionHandler for getImagesForCoordinates
@@ -66,13 +66,13 @@ class Flickr:NSObject {
             } else {
                 var imageURLArray:[String] = []
                 var parseError:NSError?
-                let parsedJSON = NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments, error: &parseError) as! NSDictionary
+                let parsedJSON = NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments, error: &parseError) as! [String:AnyObject]
                 if parseError != nil {
                     println("parsing error in getImages")
                     println(parseError!.localizedDescription)
                     resultDict[ResultKeys.error] = parseError!
                 } else if let photosDict = parsedJSON["photos"] as? [String:AnyObject] {
-                    if let thisPage = (photosDict["page"] as? String)?.toInt(), totalPages = (photosDict["pages"] as? String)?.toInt(), totalPhotos = (photosDict["total"] as? String)?.toInt() {
+                    if let thisPage = photosDict["page"] as? Int, totalPages = photosDict["pages"] as? Int, totalPhotos = (photosDict["total"] as? String)?.toInt() {
                         resultDict[ResultKeys.thisPage] = thisPage
                         resultDict[ResultKeys.totalPages] = totalPages
                         if totalPhotos > 0 {
@@ -109,10 +109,20 @@ class Flickr:NSObject {
     }
     
     
-    func retrieveImageWithName(imageName:String,completionHandler:(Void)->NSData?)->NSURLSessionDataTask{
+    func retrieveImageFromURL(urlString:String,completionHandler:(fileLocationURL:NSURL?)->Void)->NSURLSessionDownloadTask {
+        let request = NSURLRequest(URL: NSURL(string: urlString)!)
+        let session = NSURLSession.sharedSession()
         
-        
-        return NSURLSessionDataTask()
+        let downloadTask = session.downloadTaskWithRequest(request, completionHandler: { (fileURL, response, downloadError) -> Void in
+            if downloadError != nil {
+                println("Error downloading image \(downloadError!.localizedDescription)")
+                completionHandler(fileLocationURL: nil)
+            } else {
+                completionHandler(fileLocationURL: fileURL!)
+            }
+        })
+        downloadTask.resume()
+        return downloadTask
     }
     
     func constructImageURLStringFromDict(dict:[String:AnyObject])->String?{

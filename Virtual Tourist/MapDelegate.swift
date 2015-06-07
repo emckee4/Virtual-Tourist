@@ -11,20 +11,7 @@ extension TravelMapViewController  {
     
     func mapView(mapView: MKMapView!, annotationView view: MKAnnotationView!, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
         
-        func dragState(state:MKAnnotationViewDragState)->String{
-            switch state {
-            case .Canceling:
-                return ".Canceling"
-            case .Dragging:
-                return ".Dragging"
-            case .Ending:
-                return ".Ending"
-            case .None:
-                return ".None"
-            case .Starting:
-                return ".Starting"
-            }
-        }
+
         switch newState {
         case .Ending:
             // (shared with didAddAnnotationViews) here we call prefetch of location info, array of associated picture names from flickr, creation of new image objects (and loading of that data by extension)
@@ -63,6 +50,22 @@ extension TravelMapViewController  {
     }
     
     func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
-        println("did deselect")
+        println("did deselect, state is \(dragState(view.dragState))")
+    }
+    
+    
+    func dragState(state:MKAnnotationViewDragState)->String{
+        switch state {
+        case .Canceling:
+            return ".Canceling"
+        case .Dragging:
+            return ".Dragging"
+        case .Ending:
+            return ".Ending"
+        case .None:
+            return ".None"
+        case .Starting:
+            return ".Starting"
+        }
     }
 }

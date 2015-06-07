@@ -25,14 +25,28 @@ class PinnedLocation: NSManagedObject, MKAnnotation {
         set {self.latitude = newValue.latitude; self.longitude = newValue.longitude}
     }
     
+    var delegate:PinnedLocationDelegate?
     
-    ///This holds the inprogress image array retrieval session so that it can be cancelled if the location is deleted before this completes
+    ///This holds the inprogress image array retrieval session so that it can be cancelled if the location is deleted or changed before it completes
     var flickrSession: NSURLSessionDataTask?
     
     var pointAnnotation:MKPointAnnotation {
         let coord = CLLocationCoordinate2DMake(self.latitude.doubleValue, self.longitude.doubleValue)
         let annotation = MKPointAnnotation()
         return annotation
+    }
+    
+    var imageCount:Int {
+        return imagesAtLocation.count
+    }
+    
+    var allImagesHaveLoaded:Bool {
+        for image in imagesAtLocation.allObjects as! [Image] {
+            if image.imageHasLoaded == false {
+                return false
+            }
+        }
+        return true
     }
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
@@ -43,8 +57,18 @@ class PinnedLocation: NSManagedObject, MKAnnotation {
         let entity = NSEntityDescription.entityForName("PinnedLocation", inManagedObjectContext: context)!
         super.init(entity: entity, insertIntoManagedObjectContext: context)
         self.coordinate = coordinate
+        
+        self.currentPage = -1
+        self.totalPagesAtLocation = -1
     }
     
+    override func prepareForDeletion() {
+        super.prepareForDeletion()
+        if flickrSession != nil {
+            flickrSession!.cancel()
+            flickrSession = nil
+        }
+    }
     
     override func willSave() {
         //check which values changed, if lat or lon changed then empty images and call getNewImages
@@ -57,13 +81,59 @@ class PinnedLocation: NSManagedObject, MKAnnotation {
     
     
     func getNewImages(){
+        println("getNewImages()")
         if flickrSession != nil {
             flickrSession!.cancel()
             println("flickrSession for location cancelled by getNewImages()")
         }
+        var nextPage:Int?
+        if self.currentPage.integerValue >= 1 {
+            if self.currentPage.integerValue < self.totalPagesAtLocation.integerValue {
+                nextPage = self.currentPage.integerValue + 1
+            }
+        }
         
-        Flickr.sharedInstance()
+        Flickr.sharedInstance().getImagesForCoordinates(latitude: self.latitude.doubleValue, longitude: self.longitude.doubleValue, page: nextPage) { (resultDict) -> Void in
+            if let error = resultDict[Flickr.ResultKeys.error] as? NSError {
+                println("error returned by resultdict")
+                return
+            }
+            if let thisPage = resultDict[Flickr.ResultKeys.thisPage] as? Int, totalPages = resultDict[Flickr.ResultKeys.totalPages] as? Int{
+                if thisPage > 0 && totalPages > 0{
+                    self.currentPage = thisPage
+                    self.totalPagesAtLocation = totalPages
+                }
+            }
+            if let imageURLArray = resultDict[Flickr.ResultKeys.imageURLs] as? [String] {
+                var newSet = Set(imageURLArray.map{ Image(imageURLString: $0, location: self, context: self.managedObjectContext!) })
+                //MARK: Below will trigger deletion of all images which are no longer referenced
+                self.imagesAtLocation = newSet
+                
+            }
+            if self.hasChanges {
+                var error:NSError?
+                self.managedObjectContext!.save(&error)
+                if let error = error {
+                    println("Error saving at conclusion of getNewImages completionHandler: \(error.localizedDescription)")
+                }
+            }
+            
+        }
     }
     
+    func removeImageFromLocation(image:Image){
+        self.imagesAtLocation = (self.imagesAtLocation as Set).subtract([image])
+    }
     
+
+    
+    func imageAtLocationHasDownloaded(image:Image){
+        //call this from individual images
+        self.delegate?.imageHasDownloaded(image)
+    }
+    
+}
+
+protocol PinnedLocationDelegate {
+    func imageHasDownloaded(image:Image)
 }

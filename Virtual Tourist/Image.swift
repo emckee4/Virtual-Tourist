@@ -6,38 +6,54 @@
 //  Copyright (c) 2015 emckee. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import CoreData
 
 @objc(Image)
 class Image: NSManagedObject {
 
-    @NSManaged var imageName: String //filename of image as retrieved from flickr
+    @NSManaged var fullURLString: String //filename of image as retrieved from flickr
     @NSManaged var locations: NSSet //we use the many to many relationship so that close pins won't download and store multiple copies of the same file
 
-    //add fetchDate so that images can be saved until we know whether we
+    private var downloadTask:NSURLSessionDownloadTask?
     
-   // var image:UIImage {
-        //should return placeholder if image == nil
+    private var fileName:String {
+        return fullURLString.lastPathComponent
+    }
+    
+    private var localPath:String {
+        return Image.getImageDir().URLByAppendingPathComponent(fileName).path!
+    }
+    
+    let imageDownloadCompleteNotification = "ImageDownloadCompleteNotification"
+    
+    
+    ///Returns the associated stored image if it has been downloaded, nil otherwise
+    var image:UIImage? {
         
-   //     return
-   // }
+        if let image = UIImage(contentsOfFile: localPath) {
+            return image
+        }
+        println("~~Problem in Image.image: nil result")
+        return nil
+    }
     
+    var imageHasLoaded:Bool {
+        return NSFileManager.defaultManager().fileExistsAtPath(localPath)
+    }
+    
+    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertIntoManagedObjectContext: context)
+    }
     
     ///should change this init such that it takes imageName only (or possible imagename + location). Init initiates download of data from the api manager
     
-    init(imageName:String, imageData:NSData, location:PinnedLocation , context: NSManagedObjectContext) {
+    init(imageURLString:String, location:PinnedLocation , context: NSManagedObjectContext) {
         let entity = NSEntityDescription.entityForName("Image", inManagedObjectContext: context)
         super.init(entity: entity!, insertIntoManagedObjectContext: context)
-        let imageDir = Image.getImageDir()
-        let imageURL = imageDir.URLByAppendingPathComponent(imageName)
-        if NSFileManager.defaultManager().fileExistsAtPath(imageURL.path!) {
-            //image already exists in the store.
-            println("Image.init(): FILE ALREADY EXISTS- THIS SHOULD NOT HAPPEN")
-        }
-        imageData.writeToFile(imageURL.path!, atomically: true)
-        self.imageName = imageName
+        self.fullURLString = imageURLString
         self.addLocation(location)
+        self.downloadImage()
     }
     
 
@@ -50,8 +66,53 @@ class Image: NSManagedObject {
 
     override func willSave() {
         //good place to check if not associated with any pins anymore -> delete()
-        if self.locations.count == 0 {
+        if self.locations.count == 0 && !self.deleted {
             self.managedObjectContext!.deleteObject(self)
+        }
+    }
+    
+    
+    override func prepareForDeletion() {
+        super.prepareForDeletion()
+        println("deleting image file and Image instance")
+        self.downloadTask?.cancel()
+        self.deleteStoredImage()
+    }
+    
+    private func downloadImage(){
+        let manager = NSFileManager.defaultManager()
+        self.downloadTask = Flickr.sharedInstance().retrieveImageFromURL(self.fullURLString, completionHandler: { (fileLocationURL) -> Void in
+            if let path = fileLocationURL?.path {
+                if manager.fileExistsAtPath(path) {
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        //executing file move on main queue
+                        var error:NSError?
+                        manager.moveItemAtPath(path, toPath: self.localPath, error: &error)
+//                      NSNotificationCenter.defaultCenter().postNotificationName(self.imageDownloadCompleteNotification, object: self)
+                        self.notifyLocationsThatDownloadHasCompleted()  
+                        if error != nil {
+                            println("Error copying image file: \(error!.localizedDescription)")
+                        }
+                    })
+                } else { println("downloadImage completion: file does not exist at path \(path)")}
+            } else { println("downloadImage completion: nil path")}
+            
+        })
+        
+    }
+    
+    private func deleteStoredImage(){
+        let manager = NSFileManager.defaultManager()
+        if manager.fileExistsAtPath(self.localPath){
+            var error:NSError?
+            manager.removeItemAtPath(self.localPath, error: &error)
+            if error != nil {
+                println("Error deleting image: \(error!.localizedDescription)")
+            } else {
+                println("file deleted")
+            }
+        } else {
+            println("deleteStoredImage: File does not exist")
         }
     }
     
@@ -71,4 +132,12 @@ class Image: NSManagedObject {
         }
         return imageDir
     }
+    
+    func notifyLocationsThatDownloadHasCompleted(){
+        for location in locations.allObjects as! [PinnedLocation]{
+            location.imageAtLocationHasDownloaded(self)
+        }
+    }
+    
+    
 }

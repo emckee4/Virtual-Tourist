@@ -4,24 +4,25 @@
 \margl1440\margr1440\vieww9000\viewh8400\viewkind0
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
 
-\f0\fs24 \cf0 no returning page and pageTotal\
+\f0\fs24 \cf0 longpress/tap/edit/delete for map view\
+//////notifications for download complete/image ready --> either use nsnotificationCenter, delegate from image to PinnedLocation, or use closure\
+////// notification updates cell and informs collectionVC that the downloads are complete (enabling new collection to be requested)\
+delete photo from PinnedLocation array -> swipe gesture, press and hold, etc?\
 \
+\
+\
+\
+\
+\
+\
+\
+should be unneccesary:\
+add second context for background functionality?\
+\
+Randomness:\
+no returning page and pageTotal\
 could have getImages call itself with a page number specified if no page number was specified in order to ensure randomness of call\
 \
 \
 \
-\
-\
-need to:\
-\
-image object should be created as soon as it's associated with a pin. Download can proceed in the background to fill in actual data. Don't assume file exists always or at moment of Image object creation\
-\
-\
-create api interface\
-\
-pin creation(gesture, hold and drop, enable drag, multiple or single pin?)\
-\
-pin selection/drop -> prefetch images, call imageView\
-\
-\
-need to create class files for coredata objects }
+}

@@ -36,7 +36,7 @@ class TravelMapViewController: UIViewController, MKMapViewDelegate{
     
     
     override func viewWillAppear(animated: Bool) {
-        self.navigationController?.navigationBar.hidden = true
+        //self.navigationController?.navigationBar.hidden = true
         if let region = RegionPersister.getSavedRegion() {
             self.mapView.setRegion(region, animated: true)
         }
@@ -56,8 +56,22 @@ class TravelMapViewController: UIViewController, MKMapViewDelegate{
  
     func handleTap(sender:UITapGestureRecognizer){
         println("screen tapped \(sender.state.rawValue)")
-        let loc = sender.locationInView(sender.view!)
+//        if (self.mapView.selectedAnnotations?.count ?? 0) > 0 {
+//            println("annotations selected")
+//        }
+        let loc:CGPoint = sender.locationInView(sender.view!)
+        if let hit = mapView.hitTest(loc, withEvent: nil){
+            println("hit test found \(hit)")
+            if hit is MKAnnotationView {
+                println("Selection in progress: handleTap returning so as to avoid dropping a new pin")
+                let pinnedLocation = (hit as! MKAnnotationView).annotation as! PinnedLocation
+                pinSelected(pinnedLocation)
+                return
+            }
+        }
+        
         let coord = self.mapView.convertPoint(loc, toCoordinateFromView: self.mapView)
+        
         let annotation = PinnedLocation(coordinate: coord, context: sharedContext)
         CoreDataStack.sharedInstance().saveContext()
         self.mapView.addAnnotation(annotation)
@@ -80,7 +94,13 @@ class TravelMapViewController: UIViewController, MKMapViewDelegate{
        
     }
     
-    
+    func pinSelected(pin:PinnedLocation){
+        pin.getNewImages()
+        
+        let photoVC = self.storyboard!.instantiateViewControllerWithIdentifier("PhotoAlbumScene") as! PhotoAlbumViewController
+        photoVC.thisLocation = pin
+        self.navigationController!.pushViewController(photoVC, animated: true)
+    }
     
 
 }

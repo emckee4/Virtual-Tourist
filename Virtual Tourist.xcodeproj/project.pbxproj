@@ -22,6 +22,8 @@
 		C0A1C0B11B1F7B5F008B5D1B /* PinnedLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1C0B01B1F7B5F008B5D1B /* PinnedLocation.swift */; };
 		C0A1C0B41B1F9C8B008B5D1B /* MapDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1C0B31B1F9C8B008B5D1B /* MapDelegate.swift */; };
 		C0A1C0B61B1FD155008B5D1B /* Flickr.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1C0B51B1FD155008B5D1B /* Flickr.swift */; };
+		C0A1C0B81B2294E9008B5D1B /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1C0B71B2294E9008B5D1B /* PhotoCell.swift */; };
+		C0A1C0BA1B238315008B5D1B /* PlaceholderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1C0B91B238315008B5D1B /* PlaceholderCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +56,8 @@
 		C0A1C0B01B1F7B5F008B5D1B /* PinnedLocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinnedLocation.swift; sourceTree = "<group>"; };
 		C0A1C0B31B1F9C8B008B5D1B /* MapDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapDelegate.swift; sourceTree = "<group>"; };
 		C0A1C0B51B1FD155008B5D1B /* Flickr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Flickr.swift; sourceTree = "<group>"; };
+		C0A1C0B71B2294E9008B5D1B /* PhotoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
+		C0A1C0B91B238315008B5D1B /* PlaceholderCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaceholderCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +104,8 @@
 				C0A1C0851B1EBD56008B5D1B /* TravelMapViewController.swift */,
 				C0A1C0B31B1F9C8B008B5D1B /* MapDelegate.swift */,
 				C0A1C0A31B1F6780008B5D1B /* PhotoAlbumViewController.swift */,
+				C0A1C0B71B2294E9008B5D1B /* PhotoCell.swift */,
+				C0A1C0B91B238315008B5D1B /* PlaceholderCell.swift */,
 				C0A1C0B21B1F7B74008B5D1B /* Model */,
 				C0A1C0A51B1F68EC008B5D1B /* CoreDataStack.swift */,
 				C0A1C0871B1EBD56008B5D1B /* Main.storyboard */,
@@ -257,7 +263,9 @@
 				C0A1C0A41B1F6780008B5D1B /* PhotoAlbumViewController.swift in Sources */,
 				C0A1C0B11B1F7B5F008B5D1B /* PinnedLocation.swift in Sources */,
 				C0A1C0B41B1F9C8B008B5D1B /* MapDelegate.swift in Sources */,
+				C0A1C0B81B2294E9008B5D1B /* PhotoCell.swift in Sources */,
 				C0A1C0A61B1F68EC008B5D1B /* CoreDataStack.swift in Sources */,
+				C0A1C0BA1B238315008B5D1B /* PlaceholderCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
