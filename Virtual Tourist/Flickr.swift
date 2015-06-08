@@ -19,6 +19,8 @@ class Flickr:NSObject {
         return Singleton.shared
     }
     
+    private var lastErrorCode:Int?
+    
     private let flickrAPIKey = "60d992c9c1aed6e8cfda4708a1ca46ca"
 
     private let baseURL = "https://api.flickr.com/services/rest/"
@@ -55,7 +57,7 @@ class Flickr:NSObject {
     func getImagesForCoordinates(#latitude:Double,longitude:Double, page:Int?,completionHandler:(resultDict:[String:AnyObject])->Void)->NSURLSessionDataTask {
 
         let session = NSURLSession.sharedSession()
-        let request = requestWithParametersForLocation(latitude: latitude, longitude: longitude, page: nil)
+        let request = requestWithParametersForLocation(latitude: latitude, longitude: longitude, page: page)
         
         let dataTask = session.dataTaskWithRequest(request, completionHandler: { (data, response, error) -> Void in
             var resultDict = self.resultDictBase
@@ -63,8 +65,10 @@ class Flickr:NSObject {
                 println("Error in dataTaskWithRequest in getImages:")
                 println(error!)
                 resultDict[ResultKeys.error] = error!
+                self.lastErrorCode = error!.code
             } else {
                 var imageURLArray:[String] = []
+                self.lastErrorCode = nil
                 var parseError:NSError?
                 let parsedJSON = NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments, error: &parseError) as! [String:AnyObject]
                 if parseError != nil {
@@ -116,8 +120,10 @@ class Flickr:NSObject {
         let downloadTask = session.downloadTaskWithRequest(request, completionHandler: { (fileURL, response, downloadError) -> Void in
             if downloadError != nil {
                 println("Error downloading image \(downloadError!.localizedDescription)")
+                self.lastErrorCode = downloadError!.code
                 completionHandler(fileLocationURL: nil)
             } else {
+                self.lastErrorCode = nil
                 completionHandler(fileLocationURL: fileURL!)
             }
         })
@@ -164,5 +170,14 @@ class Flickr:NSObject {
             urlVars += [key + "=" + "\(escapedValue!)"]
         }
         return (!urlVars.isEmpty ? "?" : "") + join("&", urlVars)
+    }
+    
+    ///Check if the most recent task completed did so with a connection error.
+    func connectionIsOffline()->Bool{
+        if self.lastErrorCode == -1009 {
+            return true
+        } else {
+            return false
+        }
     }
 }

@@ -5,14 +5,12 @@
         <relationship name="locations" toMany="YES" deletionRule="Nullify" destinationEntity="PinnedLocation" inverseName="imagesAtLocation" inverseEntity="PinnedLocation" syncable="YES"/>
     </entity>
     <entity name="PinnedLocation" representedClassName="PinnedLocation" syncable="YES">
-        <attribute name="currentPage" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="totalPagesAtLocation" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <relationship name="imagesAtLocation" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Image" inverseName="locations" inverseEntity="Image" syncable="YES"/>
     </entity>
     <elements>
-        <element name="PinnedLocation" positionX="-63" positionY="-18" width="128" height="120"/>
+        <element name="PinnedLocation" positionX="-63" positionY="-18" width="128" height="90"/>
         <element name="Image" positionX="-54" positionY="-9" width="128" height="75"/>
     </elements>
 </model>

@@ -14,7 +14,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource,UIC
 
     @IBOutlet var photoMapView:MKMapView!
     @IBOutlet var collectionView:UICollectionView!
-    @IBOutlet var reloadImageSetButton: UIBarButtonItem!
+    var reloadImageSetButton: UIBarButtonItem!
     var thisLocation:PinnedLocation!
     
     var imageContainers: [Image]!
@@ -23,24 +23,27 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource,UIC
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        photoMapView.showAnnotations([thisLocation], animated: true)
+        //photoMapView.showAnnotations([thisLocation], animated: false)
+        //photoMapView.camera.altitude = 100000
+        setMapCenter()
         photoMapView.userInteractionEnabled = false
         collectionView.delegate = self
         collectionView.dataSource = self
-        imageContainers = (thisLocation.imagesAtLocation.allObjects as! [Image]).sorted({ (first, second) -> Bool in
-            first.fullURLString.hash < second.fullURLString.hash
-        })
+        reloadImageContainerArray()
         // Do any additional setup after loading the view.
         reloadImageSetButton = UIBarButtonItem(title: "Get New Images", style: UIBarButtonItemStyle.Plain, target: self, action: "reloadImageSet")
         self.navigationController!.navigationBar.hidden = false
-        //self.navigationController!.navigationItem.rightBarButtonItem = reloadImageSetButton
+        self.navigationItem.rightBarButtonItem = reloadImageSetButton
+        self.automaticallyAdjustsScrollViewInsets = false
     }
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         reloadImageSetButton.enabled = true//thisLocation.allImagesHaveLoaded
-
         thisLocation.delegate = self
+        if Flickr.sharedInstance().connectionIsOffline() {
+            self.showOfflineAlert()
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -76,18 +79,23 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource,UIC
         reloadImageSetButton.enabled = true
     }
     
+    
     func imageHasDownloaded(image: Image) {
         // find image in array and reload it
         for (n,containedImage) in enumerate(imageContainers) {
             if containedImage === image {
                 //reload cell
-                self.collectionView.reloadItemsAtIndexPaths([NSIndexPath(forItem: n, inSection: 1)])
+                self.collectionView.reloadItemsAtIndexPaths([NSIndexPath(forItem: n, inSection: 0)])
                 break
             }
         }
         
         //check if all downloaded
         reloadImageSetButton.enabled = thisLocation.allImagesHaveLoaded
+    }
+    func imageListHasBeenReloaded() {
+        reloadImageContainerArray()
+        self.collectionView.reloadData()
     }
     
     func removeImageAtIndexFromLocation(index:NSIndexPath){
@@ -96,5 +104,29 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource,UIC
         thisLocation.removeImageFromLocation(image)
     }
     
+    func showOfflineAlert(){
+        let alert = UIAlertController(title: "Connection Offline", message: "Your internet connection appears to be offline", preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "Retry", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+            reloadImageSetButton
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: {(action) -> Void in
+        }))
+        self.presentViewController(alert, animated: true, completion: nil)  
+    }
     
+    func reloadImageContainerArray(){
+        imageContainers = (thisLocation.imagesAtLocation.allObjects as! [Image]).sorted({ (first, second) -> Bool in
+            first.fullURLString.hash < second.fullURLString.hash
+        })
+    }
+    
+    func setMapCenter(){
+        let center = thisLocation.coordinate
+        photoMapView.addAnnotation(thisLocation)
+        //let mapWidth = self.photoMapView.bounds.width
+        //let mapHeight = self.photoMapView
+        //let span = MKCoordinateSpan(latitudeDelta: <#CLLocationDegrees#>, longitudeDelta: <#CLLocationDegrees#>)
+        let camera = MKMapCamera(lookingAtCenterCoordinate: center, fromEyeCoordinate: center, eyeAltitude: 500000.0)
+        photoMapView.setCamera(camera, animated: true)
+    }
 }

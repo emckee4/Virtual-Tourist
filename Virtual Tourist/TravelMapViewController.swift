@@ -17,6 +17,7 @@ class TravelMapViewController: UIViewController, MKMapViewDelegate{
     let mapRegionKey = "currentMapRegion"
     
     @IBOutlet var mapView:MKMapView!
+    
     var tapRecogniser:UITapGestureRecognizer!
     
     var sharedContext = CoreDataStack.sharedInstance().managedObjectContext
@@ -31,7 +32,7 @@ class TravelMapViewController: UIViewController, MKMapViewDelegate{
         self.tapRecogniser = UITapGestureRecognizer(target: self, action: "handleTap:")
         self.mapView.delegate = self
         self.mapView.addGestureRecognizer(self.tapRecogniser)
-        
+        self.navigationItem.leftBarButtonItem = editButtonItem()
     }
     
     
@@ -42,11 +43,7 @@ class TravelMapViewController: UIViewController, MKMapViewDelegate{
         }
         refreshAnnotations()
     }
-    override func viewWillDisappear(animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        
-    }
+
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -59,6 +56,7 @@ class TravelMapViewController: UIViewController, MKMapViewDelegate{
 //        if (self.mapView.selectedAnnotations?.count ?? 0) > 0 {
 //            println("annotations selected")
 //        }
+
         let loc:CGPoint = sender.locationInView(sender.view!)
         if let hit = mapView.hitTest(loc, withEvent: nil){
             println("hit test found \(hit)")
@@ -95,12 +93,23 @@ class TravelMapViewController: UIViewController, MKMapViewDelegate{
     }
     
     func pinSelected(pin:PinnedLocation){
-        pin.getNewImages()
-        
+        if editing {
+            mapView.removeAnnotation(pin)
+            sharedContext.deleteObject(pin)
+            CoreDataStack.sharedInstance().saveContext()
+        } else {
+        //pin.getNewImages()
         let photoVC = self.storyboard!.instantiateViewControllerWithIdentifier("PhotoAlbumScene") as! PhotoAlbumViewController
         photoVC.thisLocation = pin
         self.navigationController!.pushViewController(photoVC, animated: true)
+        }
     }
+    
+    override func setEditing(editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        println("editing = \(editing.boolValue)")
+    }
+    
     
 
 }
