@@ -34,19 +34,28 @@ class Flickr:NSObject {
     
     ///keys for resultDict used in completionHandler for getImagesForCoordinates
     struct ResultKeys {
-        static let imageURLs = "imageURLs"
+        static let imageURLsWithTitles = "imageURLsWithTitles"
         static let thisPage = "thisPage"
         static let totalPages = "totalPages"
         static let error = "error"
     }
     
+
     
     private let resultDictBase:[String:AnyObject] = [
-    ResultKeys.imageURLs: [String](),
-    ResultKeys.thisPage: -1,
-    ResultKeys.totalPages: -1
-    ]
+        ResultKeys.imageURLsWithTitles: [AnyObject](),
+        ResultKeys.thisPage: -1,
+        ResultKeys.totalPages: -1
+        ]
     
+
+    private func baseURLWithTitleDict(url:String,title:String)->[String:String] {
+        var dict = [
+            "url": url,
+            "title": title
+        ]
+        return dict
+    }
 
     /**
         getImagesForCoordinates()
@@ -81,13 +90,14 @@ class Flickr:NSObject {
                         resultDict[ResultKeys.totalPages] = totalPages
                         if totalPhotos > 0 {
                             if let photoArray = photosDict["photo"] as? [[String:AnyObject]] {
-                                var photoURLStrings:[String] = []
+                                var photoURLStringsAndTitles:[AnyObject] = []
                                 for photoElement in photoArray {
-                                    if let url = photoElement[self.imageURLSizeTag] as? String {
-                                        photoURLStrings.append(url)
+                                    if let url = photoElement[self.imageURLSizeTag] as? String, title = photoElement["title"] as? String {
+                                        let nextDict = self.baseURLWithTitleDict(url, title: title)
+                                        photoURLStringsAndTitles.append(nextDict)
                                     }
                                 }
-                                resultDict[ResultKeys.imageURLs] = photoURLStrings
+                                resultDict[ResultKeys.imageURLsWithTitles] = photoURLStringsAndTitles
                             } else {
                                 println("photosArray could not be created")
                             }

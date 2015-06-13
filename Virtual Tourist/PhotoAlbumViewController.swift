@@ -10,14 +10,16 @@ import UIKit
 import MapKit
 import CoreData
 
-class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource,UICollectionViewDelegate, PinnedLocationDelegate {
+class PhotoAlbumViewController: UIViewController, PinnedLocationDelegate {
 
     @IBOutlet var photoMapView:MKMapView!
     @IBOutlet var collectionView:UICollectionView!
     var reloadImageSetButton: UIBarButtonItem!
     var thisLocation:PinnedLocation!
+    let transition = ExpandImageTransition()
     
     var imageContainers: [Image]!
+    
     
     var sharedContext = CoreDataStack.sharedInstance().managedObjectContext!
     
@@ -51,28 +53,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource,UIC
         // Dispose of any resources that can be recreated.
     }
     
-
-
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        return 1
-    }
-    
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        
-        let thisImageContainer = imageContainers[indexPath.item]
-        if let image:UIImage = thisImageContainer.image {
-            let cell = collectionView.dequeueReusableCellWithReuseIdentifier("collectionViewCell", forIndexPath: indexPath) as! PhotoCell
-            cell.imageView.image = image
-            return cell
-        } else {
-            return collectionView.dequeueReusableCellWithReuseIdentifier("placeholderCell", forIndexPath: indexPath) as! PlaceholderCell
-            
-        }
-    }
-    
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return imageContainers.count
-    }
     
     func reloadImageSet(){
         thisLocation.getNewImages()
@@ -125,8 +105,10 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource,UIC
         photoMapView.addAnnotation(thisLocation)
         //let mapWidth = self.photoMapView.bounds.width
         //let mapHeight = self.photoMapView
-        //let span = MKCoordinateSpan(latitudeDelta: <#CLLocationDegrees#>, longitudeDelta: <#CLLocationDegrees#>)
         let camera = MKMapCamera(lookingAtCenterCoordinate: center, fromEyeCoordinate: center, eyeAltitude: 500000.0)
         photoMapView.setCamera(camera, animated: true)
     }
+    
+
+    
 }

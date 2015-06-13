@@ -107,8 +107,9 @@ class PinnedLocation: NSManagedObject, MKAnnotation {
                     println("~~Didn't initialize page values")
                 }
             }
-            if let imageURLArray = resultDict[Flickr.ResultKeys.imageURLs] as? [String] {
-                var newSet = Set(imageURLArray.map{ Image(imageURLString: $0, location: self, context: self.managedObjectContext!) })
+            if let imageURLsAndTitles = resultDict[Flickr.ResultKeys.imageURLsWithTitles] as? [[String:String]] {
+                
+                var newSet = Set(imageURLsAndTitles.map{ Image(imageURLString: $0["url"]!, title:$0["title"], location: self, context: self.managedObjectContext!) })
                 //MARK: Below will trigger deletion of all images which are no longer referenced
                 self.imagesAtLocation = newSet
                 self.delegate?.imageListHasBeenReloaded()   

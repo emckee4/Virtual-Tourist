@@ -2,6 +2,7 @@
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7701" systemVersion="14D136" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Image" representedClassName="Image" syncable="YES">
         <attribute name="fullURLString" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="locations" toMany="YES" deletionRule="Nullify" destinationEntity="PinnedLocation" inverseName="imagesAtLocation" inverseEntity="PinnedLocation" syncable="YES"/>
     </entity>
     <entity name="PinnedLocation" representedClassName="PinnedLocation" syncable="YES">
@@ -11,6 +12,6 @@
     </entity>
     <elements>
         <element name="PinnedLocation" positionX="-63" positionY="-18" width="128" height="90"/>
-        <element name="Image" positionX="-54" positionY="-9" width="128" height="75"/>
+        <element name="Image" positionX="-54" positionY="-9" width="128" height="90"/>
     </elements>
 </model>

@@ -13,6 +13,7 @@ import CoreData
 class Image: NSManagedObject {
 
     @NSManaged var fullURLString: String //filename of image as retrieved from flickr
+    @NSManaged var title: String
     @NSManaged var locations: NSSet //we use the many to many relationship so that close pins won't download and store multiple copies of the same file
 
     private var downloadTask:NSURLSessionDownloadTask?
@@ -34,7 +35,7 @@ class Image: NSManagedObject {
         if let image = UIImage(contentsOfFile: localPath) {
             return image
         }
-        println("~~Problem in Image.image: nil result")
+        println("~~Problem in Image.(\(title)).image: nil result ")
         return nil
     }
     
@@ -48,10 +49,11 @@ class Image: NSManagedObject {
     
     ///should change this init such that it takes imageName only (or possible imagename + location). Init initiates download of data from the api manager
     
-    init(imageURLString:String, location:PinnedLocation , context: NSManagedObjectContext) {
+    init(imageURLString:String, title:String?, location:PinnedLocation , context: NSManagedObjectContext) {
         let entity = NSEntityDescription.entityForName("Image", inManagedObjectContext: context)
         super.init(entity: entity!, insertIntoManagedObjectContext: context)
         self.fullURLString = imageURLString
+        self.title = title ?? ""
         self.addLocation(location)
         self.downloadImage()
     }
@@ -74,7 +76,7 @@ class Image: NSManagedObject {
     
     override func prepareForDeletion() {
         super.prepareForDeletion()
-        println("deleting image file and Image instance")
+        println("deleting image file and Image instance: \(title)")
         self.downloadTask?.cancel()
         self.deleteStoredImage()
     }
@@ -91,11 +93,11 @@ class Image: NSManagedObject {
 //                      NSNotificationCenter.defaultCenter().postNotificationName(self.imageDownloadCompleteNotification, object: self)
                         self.notifyLocationsThatDownloadHasCompleted()  
                         if error != nil {
-                            println("Error copying image file: \(error!.localizedDescription)")
+                            println("Error copying image(\(self.title)) file: \(error!.localizedDescription)")
                         }
                     })
-                } else { println("downloadImage completion: file does not exist at path \(path)")}
-            } else { println("downloadImage completion: nil path")}
+                } else { println("downloadImage(\(self.title)) completion: file does not exist at path \(path)")}
+            } else { println("downloadImage(\(self.title)) completion: nil path")}
             
         })
         
@@ -107,12 +109,12 @@ class Image: NSManagedObject {
             var error:NSError?
             manager.removeItemAtPath(self.localPath, error: &error)
             if error != nil {
-                println("Error deleting image: \(error!.localizedDescription)")
+                println("Error deleting image(\(title)): \(error!.localizedDescription)")
             } else {
-                println("file deleted")
+                println("file deleted:(\(title))")
             }
         } else {
-            println("deleteStoredImage: File does not exist")
+            println("deleteStoredImage(\(title)): File does not exist")
         }
     }
     

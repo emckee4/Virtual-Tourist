@@ -5,13 +5,24 @@
 \deftab529
 \pard\tx529\pardeftab529\pardirnatural
 
-\f0\b\fs22 \cf2 \CocoaLigature0 ~~Problem in Image.image: nil result ->> check if page/totalPages are updating\
+\f0\b\fs22 \cf2 \CocoaLigature0 //holding drops pin\
+//?swipe on pic to delete?\
+//fix photo transition  -- changed view background alpha line 36 of fspvc\
+\
+\
+fix transition for fullsize ??? fix popup or other option?\
+\
+add deletion of individual images\
+\
+add comments, cleanup code\
+cleanup printlns\
+test with link issues\
+\
+\
 add either extra vc for viewing, popup view, or collectionview card view for viewing pictures up close\
-
-\f1\b0\fs24 \cf0 \CocoaLigature1 longpress/tap/edit/delete for map view\
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
-\cf0 //////notifications for download complete/image ready --> either use nsnotificationCenter, delegate from image to PinnedLocation, or use closure\
-////// notification updates cell and informs collectionVC that the downloads are complete (enabling new collection to be requested)\
+
+\f1\b0\fs24 \cf0 \CocoaLigature1 \
 delete photo from PinnedLocation array -> swipe gesture, press and hold, etc?\
 \
 \
@@ -20,15 +31,6 @@ delete photo from PinnedLocation array -> swipe gesture, press and hold, etc?\
 \
 \
 \
-\
-\
-\
-should be unneccesary:\
-add second context for background functionality?\
-\
-Randomness:\
-no returning page and pageTotal\
-could have getImages call itself with a page number specified if no page number was specified in order to ensure randomness of call\
 \
 \
 \
