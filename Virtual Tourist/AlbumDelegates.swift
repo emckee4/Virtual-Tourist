@@ -22,7 +22,6 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        
         let thisImageContainer = imageContainers[indexPath.item]
         if let image:UIImage = thisImageContainer.image {
             let cell = collectionView.dequeueReusableCellWithReuseIdentifier("collectionViewCell", forIndexPath: indexPath) as! PhotoCell
@@ -38,7 +37,7 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         return imageContainers.count
     }
     
-    
+    ///Cell selection begins the transition animation used to show the selected photo in scaled aspect fit.
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         println("did deselect cell")
         let photoVC = FullSizePhotoViewController()
@@ -46,10 +45,30 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         let cellLayoutAttributes = collectionView.layoutAttributesForItemAtIndexPath(indexPath)
         self.transition.originImageFrame = collectionView.convertRect(cellLayoutAttributes!.frame, toView: self.view)
         photoVC.transitioningDelegate = self
+        //The below setting ensures that the album view controller isn't removed from the view hierarchy. This means we can see it behind the selected image even after the transition has completed
         photoVC.modalPresentationStyle = UIModalPresentationStyle.OverFullScreen
         self.presentViewController(photoVC, animated: true, completion: nil)
         
     }
+    
+    //MARK:- PinnedLocationDelegate functions
+    
+    func imageHasDownloaded(image: Image) {
+        // find image in array and reload it
+        for (n,containedImage) in enumerate(imageContainers) {
+            if containedImage === image {
+                self.collectionView.reloadItemsAtIndexPaths([NSIndexPath(forItem: n, inSection: 0)])
+                break
+            }
+        }
+        //check if all downloaded
+        reloadImageSetButton.enabled = thisLocation.allImagesHaveLoaded
+    }
+    func imageListHasBeenReloaded() {
+        reloadImageContainerArray()
+        self.collectionView.reloadData()
+    }
+    
     
 //MARK:- Transitioning delegate functions
     func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {

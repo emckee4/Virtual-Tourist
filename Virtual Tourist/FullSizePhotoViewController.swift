@@ -21,23 +21,22 @@ class FullSizePhotoViewController: UIViewController, UIViewControllerTransitioni
         super.viewDidLoad()
 
         self.imageView = UIImageView(image:imageContainer.image)
-        //set to aspect fill based on size of frame (possibly do this in view will appear)
-        
+
         imageView.contentMode = UIViewContentMode.Center
         let screenBounds = UIScreen.mainScreen().coordinateSpace.bounds
-        println("screenBounds: \(screenBounds)")
-
+        //set to aspect fill based on size of frame
         if !CGRectContainsRect(screenBounds, imageView.frame){
             imageView.contentMode = UIViewContentMode.ScaleAspectFit
             println("scale aspect fit")
         }
         imageView.frame = screenBounds
         self.view.addSubview(self.imageView)
-        self.view.backgroundColor = UIColor(white: 0.0, alpha: 0.5)
+        self.view.backgroundColor = UIColor.clearColor()
         self.gestureRecognizer = UITapGestureRecognizer(target: self, action: "dismissTap")
         self.view.addGestureRecognizer(gestureRecognizer)
         println("FSPVC:vdl")
         self.imageView.backgroundColor = UIColor.clearColor()
+        self.imageView.opaque = true
     }
 
     override func didReceiveMemoryWarning() {
@@ -45,12 +44,8 @@ class FullSizePhotoViewController: UIViewController, UIViewControllerTransitioni
         // Dispose of any resources that can be recreated.
     }
     
-
-    
-    
     
     func dismissTap(){
-        println("FSPVC:dT")
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     

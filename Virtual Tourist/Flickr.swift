@@ -57,11 +57,6 @@ class Flickr:NSObject {
         return dict
     }
 
-    /**
-        getImagesForCoordinates()
-        completionHandler resultDict format:
-    
-    */
     
     func getImagesForCoordinates(#latitude:Double,longitude:Double, page:Int?,completionHandler:(resultDict:[String:AnyObject])->Void)->NSURLSessionDataTask {
 

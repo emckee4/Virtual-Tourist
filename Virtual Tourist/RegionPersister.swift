@@ -10,7 +10,7 @@ import Foundation
 import MapKit
 
 
-/// NSCoding compliant container for MKCoordinateRegion structs
+/// NSCoding compliant container for MKCoordinateRegion structs. This also contains class functions which perform the actual storage and retrieval of these objects from NSUserDefaults
 class RegionPersister:NSObject, NSCoding {
     
     var coordLat:Double

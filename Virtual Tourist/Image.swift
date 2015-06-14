@@ -84,20 +84,24 @@ class Image: NSManagedObject {
     private func downloadImage(){
         let manager = NSFileManager.defaultManager()
         self.downloadTask = Flickr.sharedInstance().retrieveImageFromURL(self.fullURLString, completionHandler: { (fileLocationURL) -> Void in
-            if let path = fileLocationURL?.path {
+            if (self as Image?) == nil {
+                println("Image object was deleted before the download completion handler returned. Temp file will be deleted")
+                if let path = fileLocationURL {
+                    manager.removeItemAtURL(path, error: nil)
+                }
+            } else if let path = fileLocationURL?.path {
                 if manager.fileExistsAtPath(path) {
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
                         //executing file move on main queue
                         var error:NSError?
                         manager.moveItemAtPath(path, toPath: self.localPath, error: &error)
-//                      NSNotificationCenter.defaultCenter().postNotificationName(self.imageDownloadCompleteNotification, object: self)
-                        self.notifyLocationsThatDownloadHasCompleted()  
+                        self.notifyLocationsThatDownloadHasCompleted()
                         if error != nil {
                             println("Error copying image(\(self.title)) file: \(error!.localizedDescription)")
                         }
                     })
                 } else { println("downloadImage(\(self.title)) completion: file does not exist at path \(path)")}
-            } else { println("downloadImage(\(self.title)) completion: nil path")}
+            } else { println("file deleted before completion handler returned")}
             
         })
         
@@ -118,7 +122,17 @@ class Image: NSManagedObject {
         }
     }
     
-
+    ///Checks if image is nil and download task has failed. If so this will restart the download task. This function is intended to be called by view controllers that wish to display an image that hasn't loaded for whatever reason.
+    func retryDownloadIfNeeded(){
+        if self.image == nil {
+            if self.downloadTask?.state == NSURLSessionTaskState.Running {
+                //task is in progress and presumably proceeding as it should. We return here without restarting. Once it times out we can restart.
+                return
+            }
+            downloadImage()
+        }
+    }
+    
     
     ///gets image directory if it exists, sets it up and returns it if not
     class func getImageDir()->NSURL{
