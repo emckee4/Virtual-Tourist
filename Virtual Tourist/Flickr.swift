@@ -30,7 +30,6 @@ class Flickr:NSObject {
     private let noJsonCallback = "1"
     private let boundingBoxDelta:Double = 1.0
     private let perPage = "20"
-    private let basePhotoURLString = "https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg"
     
     ///keys for resultDict used in completionHandler for getImagesForCoordinates
     struct ResultKeys {
@@ -136,13 +135,6 @@ class Flickr:NSObject {
         return downloadTask
     }
     
-    func constructImageURLStringFromDict(dict:[String:AnyObject])->String?{
-        // "https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg"
-        var urlString = basePhotoURLString
-        //basePhotoURLString.stringByReplacingOccurrencesOfString("{farm-id}", withString: <#String#>, options: <#NSStringCompareOptions#>, range: <#Range<String.Index>?#>)
-        return urlString
-        //FIXME: fix or remove this function
-    }
     
     private func requestWithParametersForLocation(#latitude:Double,longitude:Double,page:Int?)->NSURLRequest {
         var methodArgs:[String:String] = [
