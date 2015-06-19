@@ -65,8 +65,6 @@ class Flickr:NSObject {
         let dataTask = session.dataTaskWithRequest(request, completionHandler: { (data, response, error) -> Void in
             var resultDict = self.resultDictBase
             if error != nil {
-                println("Error in dataTaskWithRequest in getImages:")
-                println(error!)
                 resultDict[ResultKeys.error] = error!
                 self.lastErrorCode = error!.code
             } else {
@@ -75,8 +73,6 @@ class Flickr:NSObject {
                 var parseError:NSError?
                 let parsedJSON = NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments, error: &parseError) as! [String:AnyObject]
                 if parseError != nil {
-                    println("parsing error in getImages")
-                    println(parseError!.localizedDescription)
                     resultDict[ResultKeys.error] = parseError!
                 } else if let photosDict = parsedJSON["photos"] as? [String:AnyObject] {
                     if let thisPage = photosDict["page"] as? Int, totalPages = photosDict["pages"] as? Int, totalPhotos = (photosDict["total"] as? String)?.toInt() {
@@ -92,20 +88,12 @@ class Flickr:NSObject {
                                     }
                                 }
                                 resultDict[ResultKeys.imageURLsWithTitles] = photoURLStringsAndTitles
-                            } else {
-                                println("photosArray could not be created")
                             }
-                            
-                        } else {
-                            println("no photos at location")
                         }
-                    } else {
-                        println("invalid/no values in thisPage/totalPages/totalPhotos")
                     }
                     
                 } else {
                     let errorDescription = "photosDict could not be created from parsedJSON[photos]"
-                    println(errorDescription)
                     resultDict[ResultKeys.error] = NSError(domain: "Flickr", code: 0, userInfo: [NSLocalizedDescriptionKey:errorDescription])
 
                 }
@@ -123,7 +111,6 @@ class Flickr:NSObject {
         
         let downloadTask = session.downloadTaskWithRequest(request, completionHandler: { (fileURL, response, downloadError) -> Void in
             if downloadError != nil {
-                println("Error downloading image \(downloadError!.localizedDescription)")
                 self.lastErrorCode = downloadError!.code
                 completionHandler(fileLocationURL: nil)
             } else {

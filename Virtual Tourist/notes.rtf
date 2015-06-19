@@ -8,4 +8,7 @@
 \
 \
 \
-}
+Note that relative to spec:\
+\
+Long press in album view deletes image while tap opens a full size view\
+Rather than using a one to many relationship with cascading deletion for relationship between pins and photos, I chose a many to many relationship with reference counting and auto deletion. This was more complex than the spec's choice but it ensures that an image isn't downloaded multiple times if several pins are dropped close enough to each other to have some pictures shared between them.}

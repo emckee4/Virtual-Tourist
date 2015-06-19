@@ -39,7 +39,6 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
     
     ///Cell selection begins the transition animation used to show the selected photo in scaled aspect fit.
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        println("did deselect cell")
         let photoVC = FullSizePhotoViewController()
         photoVC.imageContainer = imageContainers[indexPath.item]
         let cellLayoutAttributes = collectionView.layoutAttributesForItemAtIndexPath(indexPath)
@@ -73,7 +72,6 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
 //MARK:- Transitioning delegate functions
     func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         transition.isPresenting = true
-        println("album:acfpc")
         return transition
     }
     

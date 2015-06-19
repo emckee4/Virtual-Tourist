@@ -27,7 +27,6 @@ class FullSizePhotoViewController: UIViewController, UIViewControllerTransitioni
         //set to aspect fill based on size of frame
         if !CGRectContainsRect(screenBounds, imageView.frame){
             imageView.contentMode = UIViewContentMode.ScaleAspectFit
-            println("scale aspect fit")
         }
         imageView.frame = screenBounds
         self.view.addSubview(self.imageView)

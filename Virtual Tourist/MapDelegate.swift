@@ -32,29 +32,5 @@ extension TravelMapViewController  {
         return annotationView
     }
     
-    
-//    
-//    func mapView(mapView: MKMapView!, didSelectAnnotationView view: MKAnnotationView!) {
-//        println("did select")
-//    }
-//    
-//    func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
-//        println("did deselect, state is \(dragState(view.dragState))")
-//    }
-//    
-//    ///helpful function for debugging the drag state and UIGestureRecognizer interactions
-//    func dragState(state:MKAnnotationViewDragState)->String{
-//        switch state {
-//        case .Canceling:
-//            return ".Canceling"
-//        case .Dragging:
-//            return ".Dragging"
-//        case .Ending:
-//            return ".Ending"
-//        case .None:
-//            return ".None"
-//        case .Starting:
-//            return ".Starting"
-//        }
-//    }
+
 }

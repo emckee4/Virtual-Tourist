@@ -24,10 +24,6 @@ class PhotoAlbumViewController: UIViewController, PinnedLocationDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //photoMapView.showAnnotations([thisLocation], animated: false)
-        //photoMapView.camera.altitude = 100000
-        //coverView.backgroundColor = UIColor.blackColor()
-        //coverView.alpha = 0.0
         setMapCenter()
         photoMapView.userInteractionEnabled = false
         collectionView.delegate = self

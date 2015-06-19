@@ -73,7 +73,6 @@ class PinnedLocation: NSManagedObject, MKAnnotation {
     override func willSave() {
         //check which values changed, if lat or lon changed then empty images and call getNewImages
         if self.changedValues()["latitude"] != nil || self.changedValues()["longitude"] != nil {
-            println("PInnedLocation:willSave() location changed, refreshing data")
             getNewImages()
         }
     }
@@ -84,7 +83,6 @@ class PinnedLocation: NSManagedObject, MKAnnotation {
         
         if flickrSession != nil {
             flickrSession!.cancel()
-            println("flickrSession for location cancelled by getNewImages()")
         }
         var nextPage:Int?
         if self.currentPage > 0 {
@@ -92,19 +90,15 @@ class PinnedLocation: NSManagedObject, MKAnnotation {
                 nextPage = self.currentPage! + 1
             }
         }
-        println("getNewImages() with currentPage: \(self.currentPage), total: \(self.totalPagesAtLocation), nextPage: \(nextPage)")
         Flickr.sharedInstance().getImagesForCoordinates(latitude: self.latitude.doubleValue, longitude: self.longitude.doubleValue, page: nextPage) { (resultDict) -> Void in
             if let error = resultDict[Flickr.ResultKeys.error] as? NSError {
-                println("error returned by resultdict")
                 return
             }
             if let thisPage = resultDict[Flickr.ResultKeys.thisPage] as? Int, totalPages = resultDict[Flickr.ResultKeys.totalPages] as? Int{
                 if thisPage > 0 && totalPages > 0{
                     self.currentPage = thisPage
                     self.totalPagesAtLocation = totalPages
-                    println("Got new pages: currentPage: \(self.currentPage), totalPages: \(self.totalPagesAtLocation)")
                 } else {
-                    println("~~Didn't initialize page values")
                 }
             }
             if let imageURLsAndTitles = resultDict[Flickr.ResultKeys.imageURLsWithTitles] as? [[String:String]] {
@@ -118,7 +112,6 @@ class PinnedLocation: NSManagedObject, MKAnnotation {
                 var error:NSError?
                 self.managedObjectContext!.save(&error)
                 if let error = error {
-                    println("Error saving at conclusion of getNewImages completionHandler: \(error.localizedDescription)")
                 }
             }
             

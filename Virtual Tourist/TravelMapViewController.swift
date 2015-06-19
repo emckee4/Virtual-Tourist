@@ -56,12 +56,9 @@ class TravelMapViewController: UIViewController, MKMapViewDelegate{
 
     ///Handler for tap gesture recognizer. This seems to work a little more reliably in selecting pins under the proper circumstances than do the mapView delegate functions, at least when we're also including dragging and long press functionality. This function looks at the tap location and if a pin is found there it calls pinSelected to trigger the transition to the photoAlbum view
     func handleTap(sender:UITapGestureRecognizer){
-        println("screen tapped \(sender.state.rawValue)")
         let loc:CGPoint = sender.locationInView(sender.view!)
         if let hit = mapView.hitTest(loc, withEvent: nil){
-            println("hit test found \(hit)")
             if hit is MKAnnotationView {
-                println("Selection in progress: handleTap returning so as to avoid dropping a new pin")
                 let pinnedLocation = (hit as! MKAnnotationView).annotation as! PinnedLocation
                 pinSelected(pinnedLocation)
                 return
@@ -70,21 +67,18 @@ class TravelMapViewController: UIViewController, MKMapViewDelegate{
     }
     ///Long press gesture recognizer handler. This is used to drop a new pin (creating a new PinnedLocation instance in the process) if the target location is unoccupied by another pin. In practice though the hit check is probably unnecessary since the drag recognizer in the mapView seems to take precedence in pinned regions.
     func handleLongPress(sender:UILongPressGestureRecognizer){
-        println("LongPress")
         let loc:CGPoint = sender.locationInView(sender.view!)
         if let hit = mapView.hitTest(loc, withEvent: nil){
-            println("hit test found \(hit)")
             if hit is MKAnnotationView {
-                println("Selection in progress: handleTap returning so as to avoid dropping a new pin")
-                //let pinnedLocation = (hit as! MKAnnotationView).annotation as! PinnedLocation
-                //let annoView = mapView(self.mapView, viewForAnnotation: pinnedLocation)
                 return
             }
         }
-        let coord = self.mapView.convertPoint(loc, toCoordinateFromView: self.mapView)
-        let annotation = PinnedLocation(coordinate: coord, context: sharedContext)
-        CoreDataStack.sharedInstance().saveContext()
-        self.mapView.addAnnotation(annotation)
+        if sender.state == UIGestureRecognizerState.Began {
+            let coord = self.mapView.convertPoint(loc, toCoordinateFromView: self.mapView)
+            let annotation = PinnedLocation(coordinate: coord, context: sharedContext)
+            CoreDataStack.sharedInstance().saveContext()
+            self.mapView.addAnnotation(annotation)
+        }
     }
     
     ///Retrieves and reloads all pin locations
@@ -92,13 +86,11 @@ class TravelMapViewController: UIViewController, MKMapViewDelegate{
         var error:NSError?
         let results = self.sharedContext.executeFetchRequest(self.fetchRequest, error: &error)
         if let error = error {
-            println("error refreshing annotations: \n\(error.localizedDescription)")
             return
         }
         if let annotations = results as? [PinnedLocation] {
             self.mapView.removeAnnotations(self.mapView.annotations)
             self.mapView.addAnnotations(annotations)
-            println("updated \(annotations.count) annotations")
         }
     }
     

@@ -35,7 +35,6 @@ class Image: NSManagedObject {
         if let image = UIImage(contentsOfFile: localPath) {
             return image
         }
-        println("~~Problem in Image.(\(title)).image: nil result ")
         return nil
     }
     
@@ -76,7 +75,6 @@ class Image: NSManagedObject {
     
     override func prepareForDeletion() {
         super.prepareForDeletion()
-        println("deleting image file and Image instance: \(title)")
         self.downloadTask?.cancel()
         self.deleteStoredImage()
     }
@@ -85,7 +83,6 @@ class Image: NSManagedObject {
         let manager = NSFileManager.defaultManager()
         self.downloadTask = Flickr.sharedInstance().retrieveImageFromURL(self.fullURLString, completionHandler: { (fileLocationURL) -> Void in
             if (self as Image?) == nil {
-                println("Image object was deleted before the download completion handler returned. Temp file will be deleted")
                 if let path = fileLocationURL {
                     manager.removeItemAtURL(path, error: nil)
                 }
@@ -96,12 +93,10 @@ class Image: NSManagedObject {
                         var error:NSError?
                         manager.moveItemAtPath(path, toPath: self.localPath, error: &error)
                         self.notifyLocationsThatDownloadHasCompleted()
-                        if error != nil {
-                            println("Error copying image(\(self.title)) file: \(error!.localizedDescription)")
-                        }
+
                     })
-                } else { println("downloadImage(\(self.title)) completion: file does not exist at path \(path)")}
-            } else { println("file deleted before completion handler returned")}
+                }
+            }
             
         })
         
@@ -112,13 +107,6 @@ class Image: NSManagedObject {
         if manager.fileExistsAtPath(self.localPath){
             var error:NSError?
             manager.removeItemAtPath(self.localPath, error: &error)
-            if error != nil {
-                println("Error deleting image(\(title)): \(error!.localizedDescription)")
-            } else {
-                println("file deleted:(\(title))")
-            }
-        } else {
-            println("deleteStoredImage(\(title)): File does not exist")
         }
     }
     
@@ -142,7 +130,6 @@ class Image: NSManagedObject {
             var error:NSError?
             NSFileManager.defaultManager().createDirectoryAtURL(imageDir, withIntermediateDirectories: false, attributes: nil, error: &error)
             if let error = error {
-                println("error creating image dir \(error.localizedDescription)")
                 abort()
             }
         }
